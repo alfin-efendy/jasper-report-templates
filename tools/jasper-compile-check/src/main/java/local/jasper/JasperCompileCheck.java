@@ -31,7 +31,6 @@ public class JasperCompileCheck {
 
         JRPropertiesUtil properties = JRPropertiesUtil.getInstance(DefaultJasperReportsContext.getInstance());
         properties.setProperty("net.sf.jasperreports.compiler.classpath", runtimeClasspath);
-        properties.setProperty("net.sf.jasperreports.compiler.class", "net.sf.jasperreports.jdt.JRJdtCompiler");
 
         if (!Files.exists(sourceRoot)) {
             throw new IllegalStateException("Source folder not found: " + sourceRoot);
