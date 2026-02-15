@@ -27,9 +27,11 @@ public class JasperCompileCheck {
         Path sourceRoot = args.length > 0 ? Paths.get(args[0]) : Paths.get("templates");
         Path outputRoot = Paths.get("target", "compiled");
         String runtimeClasspath = System.getProperty("java.class.path", "");
+        ClassLoader appClassLoader = JasperCompileCheck.class.getClassLoader();
 
-        JRPropertiesUtil.getInstance(DefaultJasperReportsContext.getInstance())
-            .setProperty("net.sf.jasperreports.compiler.classpath", runtimeClasspath);
+        JRPropertiesUtil properties = JRPropertiesUtil.getInstance(DefaultJasperReportsContext.getInstance());
+        properties.setProperty("net.sf.jasperreports.compiler.classpath", runtimeClasspath);
+        properties.setProperty("net.sf.jasperreports.compiler.class", "net.sf.jasperreports.jdt.JRJdtCompiler");
 
         if (!Files.exists(sourceRoot)) {
             throw new IllegalStateException("Source folder not found: " + sourceRoot);
@@ -60,9 +62,20 @@ public class JasperCompileCheck {
             Path jasperOut = outputRoot.resolve(relative.toString().replace(".jrxml", ".jasper"));
 
             try {
-                JasperCompileManager.compileReportToFile(jrxml.toString(), jasperOut.toString());
+                Thread currentThread = Thread.currentThread();
+                ClassLoader originalContextClassLoader = currentThread.getContextClassLoader();
+                try {
+                    currentThread.setContextClassLoader(appClassLoader);
+                    JasperCompileManager.compileReportToFile(jrxml.toString(), jasperOut.toString());
+                } finally {
+                    currentThread.setContextClassLoader(originalContextClassLoader);
+                }
                 System.out.println("OK  : " + jrxml);
             } catch (JRException e) {
+                failed.add(jrxml + " -> " + rootCauseMessage(e));
+                System.err.println("FAIL: " + jrxml);
+                e.printStackTrace(System.err);
+            } catch (RuntimeException e) {
                 failed.add(jrxml + " -> " + rootCauseMessage(e));
                 System.err.println("FAIL: " + jrxml);
                 e.printStackTrace(System.err);

@@ -8,10 +8,10 @@
     <version>1.0.0</version>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jasperreports.version>7.0.3</jasperreports.version>
+        <jasperreports.version>7.0.0</jasperreports.version>
     </properties>
 
     <dependencies>
@@ -19,6 +19,11 @@
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <version>${jasperreports.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jdt</groupId>
+            <artifactId>ecj</artifactId>
+            <version>3.39.0</version>
         </dependency>
     </dependencies>
 
@@ -30,6 +35,8 @@
                 <version>3.5.0</version>
                 <configuration>
                     <mainClass>local.jasper.JasperCompileCheck</mainClass>
+                    <includeProjectDependencies>true</includeProjectDependencies>
+                    <classpathScope>runtime</classpathScope>
                 </configuration>
             </plugin>
         </plugins>

@@ -28,11 +28,11 @@ jobs:
           fi
           echo "Found $count .jrxml file(s)"
 
-      - name: Setup JDK 17
+      - name: Setup JDK 25
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '25'
           cache: maven
 
       - name: Test compile Jasper templates
