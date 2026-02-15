@@ -2,6 +2,8 @@ package local.jasper;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,6 +26,10 @@ public class JasperCompileCheck {
     public static void main(String[] args) throws IOException {
         Path sourceRoot = args.length > 0 ? Paths.get(args[0]) : Paths.get("templates");
         Path outputRoot = Paths.get("target", "compiled");
+        String runtimeClasspath = System.getProperty("java.class.path", "");
+
+        JRPropertiesUtil.getInstance(DefaultJasperReportsContext.getInstance())
+            .setProperty("net.sf.jasperreports.compiler.classpath", runtimeClasspath);
 
         if (!Files.exists(sourceRoot)) {
             throw new IllegalStateException("Source folder not found: " + sourceRoot);

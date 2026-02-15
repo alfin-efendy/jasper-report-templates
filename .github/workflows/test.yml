@@ -8,7 +8,7 @@ on:
     paths:
       - 'templates/**'
       - 'tools/jasper-compile-check/**'
-      - '.github/workflows/jasper-test.yml'
+      - '.github/workflows/test.yml'
   workflow_dispatch:
 
 jobs:
