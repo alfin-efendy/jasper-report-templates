@@ -12,6 +12,15 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class JasperCompileCheck {
+    private static String rootCauseMessage(Throwable throwable) {
+        Throwable current = throwable;
+        while (current.getCause() != null) {
+            current = current.getCause();
+        }
+        String message = current.getMessage();
+        return message == null ? current.getClass().getName() : message;
+    }
+
     public static void main(String[] args) throws IOException {
         Path sourceRoot = args.length > 0 ? Paths.get(args[0]) : Paths.get("templates");
         Path outputRoot = Paths.get("target", "compiled");
@@ -48,8 +57,9 @@ public class JasperCompileCheck {
                 JasperCompileManager.compileReportToFile(jrxml.toString(), jasperOut.toString());
                 System.out.println("OK  : " + jrxml);
             } catch (JRException e) {
-                failed.add(jrxml + " -> " + e.getMessage());
+                failed.add(jrxml + " -> " + rootCauseMessage(e));
                 System.err.println("FAIL: " + jrxml);
+                e.printStackTrace(System.err);
             }
         }
 
