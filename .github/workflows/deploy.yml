@@ -40,15 +40,40 @@ jobs:
               ;;
           esac
 
-      - name: Configure S3-compatible credentials (R2/S3)
-        if: env.STORAGE_PROVIDER != 'gcs'
+      - name: Upload to Cloudflare R2
+        if: env.STORAGE_PROVIDER == 'r2'
+        uses: ryand56/r2-upload-action@latest
+        with:
+          r2-account-id: ${{ secrets.ACCOUNT_ID }}
+          r2-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          r2-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+          r2-bucket: ${{ vars.STORAGE_BUCKET || vars.BUCKET }}
+          source-dir: templates
+          destination-dir: ${{ env.STORAGE_PREFIX }}/templates
+          max-retries: 5
+
+      - name: Configure AWS S3 credentials
+        if: env.STORAGE_PROVIDER == 's3'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.STORAGE_PROVIDER == 'r2' && 'us-east-1' || env.STORAGE_REGION }}
+          aws-region: ${{ env.STORAGE_REGION }}
 
-      - name: Authenticate to Google Cloud (GCS)
+      - name: Upload to AWS S3
+        if: env.STORAGE_PROVIDER == 's3'
+        env:
+          STORAGE_BUCKET: ${{ vars.STORAGE_BUCKET || vars.BUCKET }}
+        run: |
+          if [ -z "$STORAGE_BUCKET" ]; then
+            echo "STORAGE_BUCKET variable is required"
+            exit 1
+          fi
+
+          aws s3 sync templates "s3://${STORAGE_BUCKET}/${STORAGE_PREFIX}/templates"
+          echo "Upload completed to S3 bucket ${STORAGE_BUCKET}"
+
+      - name: Authenticate to Google Cloud
         if: env.STORAGE_PROVIDER == 'gcs'
         uses: google-github-actions/auth@v2
         with:
@@ -58,33 +83,7 @@ jobs:
         if: env.STORAGE_PROVIDER == 'gcs'
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Upload templates to S3-compatible storage (R2/S3)
-        if: env.STORAGE_PROVIDER != 'gcs'
-        env:
-          ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
-          STORAGE_BUCKET: ${{ vars.STORAGE_BUCKET || vars.BUCKET }}
-        run: |
-          if [ -z "$STORAGE_BUCKET" ]; then
-            echo "STORAGE_BUCKET variable is required"
-            exit 1
-          fi
-
-          ENDPOINT_ARGS=()
-          if [ "$STORAGE_PROVIDER" = "r2" ]; then
-            if [ -z "$ACCOUNT_ID" ]; then
-              echo "ACCOUNT_ID secret is required for STORAGE_PROVIDER=r2"
-              exit 1
-            fi
-            R2_ENDPOINT="https://${ACCOUNT_ID}.r2.cloudflarestorage.com"
-            ENDPOINT_ARGS=(--endpoint-url "$R2_ENDPOINT")
-          fi
-
-          aws s3 sync templates "s3://${STORAGE_BUCKET}/${STORAGE_PREFIX}/templates" \
-            "${ENDPOINT_ARGS[@]}"
-
-          echo "Upload completed to ${STORAGE_PROVIDER} bucket ${STORAGE_BUCKET}"
-
-      - name: Upload templates to Google Cloud Storage
+      - name: Upload to Google Cloud Storage
         if: env.STORAGE_PROVIDER == 'gcs'
         env:
           STORAGE_BUCKET: ${{ vars.STORAGE_BUCKET }}
@@ -95,5 +94,4 @@ jobs:
           fi
 
           gsutil -m rsync -r templates "gs://${STORAGE_BUCKET}/${STORAGE_PREFIX}/templates"
-
           echo "Upload completed to GCS bucket ${STORAGE_BUCKET}"

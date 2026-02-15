@@ -30,6 +30,8 @@ Set repository variable:
 
 ## GitHub Configuration
 
+**Important**: All secrets and variables must be configured in the **`live` environment** (Settings → Environments → live → Environment secrets/variables), as the deploy workflow uses environment-scoped credentials.
+
 ### Cloudflare R2 configuration
 
 Use when `STORAGE_PROVIDER=r2`.
