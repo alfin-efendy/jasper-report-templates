@@ -37,7 +37,9 @@ jobs:
 
       - name: Test compile Jasper templates
         run: |
-          mvn -B -f tools/jasper-compile-check/pom.xml compile exec:java -Dexec.args="templates"
+          cd tools/jasper-compile-check
+          mvn -B clean package
+          java -cp "target/jasper-compile-check-1.0.0.jar:target/lib/*" local.jasper.JasperCompileCheck ../../templates
 
       - name: Upload packaged artifact (test workflow)
         uses: actions/upload-artifact@v4
