@@ -46,7 +46,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.STORAGE_PROVIDER == 'r2' && 'auto' || env.STORAGE_REGION }}
+          aws-region: ${{ env.STORAGE_PROVIDER == 'r2' && 'us-east-1' || env.STORAGE_REGION }}
 
       - name: Authenticate to Google Cloud (GCS)
         if: env.STORAGE_PROVIDER == 'gcs'
