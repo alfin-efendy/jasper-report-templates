@@ -1,0 +1,46 @@
+name: Jasper Report Test
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'templates/**'
+      - 'tools/jasper-compile-check/**'
+      - '.github/workflows/jasper-test.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate JRXML files exist
+        run: |
+          count=$(find templates -type f -name "*.jrxml" | wc -l)
+          if [ "$count" -eq 0 ]; then
+            echo "No .jrxml files found in templates folder"
+            exit 1
+          fi
+          echo "Found $count .jrxml file(s)"
+
+      - name: Setup JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Test compile Jasper templates
+        run: |
+          mvn -B -f tools/jasper-compile-check/pom.xml compile exec:java -Dexec.args="templates"
+
+      - name: Upload packaged artifact (test workflow)
+        uses: actions/upload-artifact@v4
+        with:
+          name: jasper-report-templates
+          path: dist/jasper-report-templates.tar.gz

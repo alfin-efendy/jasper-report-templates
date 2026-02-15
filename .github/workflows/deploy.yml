@@ -1,0 +1,98 @@
+name: Jasper Report Deploy to Object Storage
+
+on:
+  workflow_run:
+    workflows:
+      - Jasper Report Test
+    types:
+      - completed
+  workflow_dispatch:
+
+env:
+  STORAGE_PROVIDER: ${{ vars.STORAGE_PROVIDER || 'r2' }}
+  STORAGE_PREFIX: ${{ vars.STORAGE_PREFIX || 'jasper-report-templates' }}
+  STORAGE_REGION: ${{ vars.STORAGE_REGION || 'us-east-1' }}
+
+jobs:
+  deploy:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'master'
+      )
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate storage provider
+        run: |
+          case "$STORAGE_PROVIDER" in
+            r2|s3|gcs)
+              echo "Using storage provider: $STORAGE_PROVIDER"
+              ;;
+            *)
+              echo "Invalid STORAGE_PROVIDER: $STORAGE_PROVIDER"
+              echo "Supported values: r2, s3, gcs"
+              exit 1
+              ;;
+          esac
+
+      - name: Configure S3-compatible credentials (R2/S3)
+        if: env.STORAGE_PROVIDER != 'gcs'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.STORAGE_PROVIDER == 'r2' && 'auto' || env.STORAGE_REGION }}
+
+      - name: Authenticate to Google Cloud (GCS)
+        if: env.STORAGE_PROVIDER == 'gcs'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+
+      - name: Setup gcloud SDK
+        if: env.STORAGE_PROVIDER == 'gcs'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Upload templates to S3-compatible storage (R2/S3)
+        if: env.STORAGE_PROVIDER != 'gcs'
+        env:
+          ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+          STORAGE_BUCKET: ${{ vars.STORAGE_BUCKET || vars.BUCKET }}
+        run: |
+          if [ -z "$STORAGE_BUCKET" ]; then
+            echo "STORAGE_BUCKET variable is required"
+            exit 1
+          fi
+
+          ENDPOINT_ARGS=()
+          if [ "$STORAGE_PROVIDER" = "r2" ]; then
+            if [ -z "$ACCOUNT_ID" ]; then
+              echo "ACCOUNT_ID secret is required for STORAGE_PROVIDER=r2"
+              exit 1
+            fi
+            R2_ENDPOINT="https://${ACCOUNT_ID}.r2.cloudflarestorage.com"
+            ENDPOINT_ARGS=(--endpoint-url "$R2_ENDPOINT")
+          fi
+
+          aws s3 sync templates "s3://${STORAGE_BUCKET}/${STORAGE_PREFIX}/templates" \
+            "${ENDPOINT_ARGS[@]}"
+
+          echo "Upload completed to ${STORAGE_PROVIDER} bucket ${STORAGE_BUCKET}"
+
+      - name: Upload templates to Google Cloud Storage
+        if: env.STORAGE_PROVIDER == 'gcs'
+        env:
+          STORAGE_BUCKET: ${{ vars.STORAGE_BUCKET }}
+        run: |
+          if [ -z "$STORAGE_BUCKET" ]; then
+            echo "STORAGE_BUCKET variable is required"
+            exit 1
+          fi
+
+          gsutil -m rsync -r templates "gs://${STORAGE_BUCKET}/${STORAGE_PREFIX}/templates"
+
+          echo "Upload completed to GCS bucket ${STORAGE_BUCKET}"

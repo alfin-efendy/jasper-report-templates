@@ -1,0 +1,217 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="invoice" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1252c088-ad76-4ea2-93a6-f1489e225c91">
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<dataset name="Dataset1" uuid="8ae2c242-3dc0-4374-9b46-90989ced3106">
+		<field name="itemName" class="java.lang.String"/>
+		<field name="description" class="java.lang.String"/>
+		<field name="unitPrice" class="java.lang.Double"/>
+		<field name="quantity" class="java.lang.Integer"/>
+		<field name="amount" class="java.lang.Double"/>
+		<variable name="SUM_QUANTITY" calculation="Sum" class="java.lang.Integer">
+			<expression><![CDATA[$F{quantity}]]></expression>
+		</variable>
+		<variable name="SUM_AMOUNT" calculation="Sum" class="java.lang.Double">
+			<expression><![CDATA[$F{quantity} * $F{amount}]]></expression>
+		</variable>
+	</dataset>
+	<parameter name="TEMPLATE_ID" class="java.lang.String"/>
+	<parameter name="TEMPLATE_VERSION" class="java.lang.String"/>
+	<parameter name="companyName" class="java.lang.String"/>
+	<parameter name="companyAddress" class="java.lang.String"/>
+	<parameter name="companyPhone" class="java.lang.String"/>
+	<parameter name="invoiceNumber" class="java.lang.String"/>
+	<parameter name="invoiceDate" class="java.lang.String"/>
+	<parameter name="dueDate" class="java.lang.String"/>
+	<parameter name="customerName" class="java.lang.String"/>
+	<parameter name="customerAddress" class="java.lang.String"/>
+	<parameter name="customerPhone" class="java.lang.String"/>
+	<parameter name="notes" class="java.lang.String"/>
+	<parameter name="totalAmount" class="java.lang.String"/>
+	<field name="details" class="java.util.List"/>
+	<title height="160" splitType="Stretch">
+		<element kind="staticText" uuid="de8a2f50-114c-4fd0-821a-c13ca81b2eb0" x="0" y="0" width="555" height="30" fontSize="18.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
+			<text><![CDATA[INVOICE]]></text>
+		</element>
+		<element kind="textField" uuid="b1f296f2-2db4-4e14-9443-801779303b31" x="0" y="35" width="280" height="20" fontSize="12.0" bold="true">
+			<expression><![CDATA[$P{companyName} ]]></expression>
+		</element>
+		<element kind="textField" uuid="d384dd94-3992-4bd6-aa60-ff1475cf0c57" x="0" y="55" width="280" height="15" fontSize="9.0">
+			<expression><![CDATA[$P{companyAddress}]]></expression>
+		</element>
+		<element kind="textField" uuid="252fe8bb-835d-4782-bb86-128c7d8a1d56" x="0" y="70" width="280" height="15" fontSize="9.0">
+			<expression><![CDATA[$P{companyPhone}]]></expression>
+		</element>
+		<element kind="staticText" uuid="011c3b2d-94ef-4a22-a6b3-0cec8b8a2e51" x="380" y="35" width="80" height="15" fontSize="9.0" bold="true">
+			<text><![CDATA[Invoice No:]]></text>
+		</element>
+		<element kind="textField" uuid="b3188b3e-7dc4-427a-8c66-a8dcbc845e1b" x="460" y="35" width="95" height="15" fontSize="9.0" hTextAlign="Right">
+			<expression><![CDATA[$P{invoiceNumber}]]></expression>
+		</element>
+		<element kind="staticText" uuid="8f1a7f80-5a96-498d-9874-33cb4941f4ef" x="380" y="50" width="80" height="15" fontSize="9.0" bold="true">
+			<text><![CDATA[Date:]]></text>
+		</element>
+		<element kind="textField" uuid="ae93b988-8dc7-41de-a045-cfd9a8f5c6f8" x="460" y="50" width="95" height="15" fontSize="9.0" hTextAlign="Right">
+			<expression><![CDATA[$P{invoiceDate}]]></expression>
+		</element>
+		<element kind="staticText" uuid="20f35002-66ed-4e22-b03b-f6b3b6260b77" x="380" y="65" width="80" height="15" fontSize="9.0" bold="true">
+			<text><![CDATA[Due Date:]]></text>
+		</element>
+		<element kind="textField" uuid="3393f743-6003-4810-a896-a760233de0dc" x="460" y="65" width="95" height="15" fontSize="9.0" hTextAlign="Right">
+			<expression><![CDATA[$P{dueDate}]]></expression>
+		</element>
+		<element kind="line" uuid="e7e35e66-6013-4101-9051-e65953b122f7" x="0" y="95" width="555" height="1"/>
+		<element kind="staticText" uuid="27761672-6630-4e4c-b597-1c7cd6e10aa5" x="0" y="100" width="100" height="15" fontSize="10.0" bold="true">
+			<text><![CDATA[Bill To:]]></text>
+		</element>
+		<element kind="textField" uuid="2fd5e1d7-b367-4d24-b994-6e1a63e3e684" x="0" y="118" width="280" height="15" fontSize="9.0" bold="true">
+			<expression><![CDATA[$P{customerName}]]></expression>
+		</element>
+		<element kind="textField" uuid="b6956b0d-4a67-4bcb-99e9-0d4577a16ff4" x="0" y="133" width="280" height="15" fontSize="9.0">
+			<expression><![CDATA[$P{customerAddress}]]></expression>
+		</element>
+		<element kind="textField" uuid="353957b3-889f-4b1f-be98-3a5cfd283301" x="0" y="148" width="280" height="12" fontSize="9.0">
+			<expression><![CDATA[$P{customerPhone}]]></expression>
+		</element>
+	</title>
+	<detail>
+		<band height="60" splitType="Stretch">
+			<element kind="component" uuid="926a3379-561f-4313-ad50-7408946013ea" x="0" y="0" width="555" height="60">
+				<component kind="table">
+					<datasetRun uuid="1419ddc6-b894-4aad-8d6c-8b06b55c5a2c" subDataset="Dataset1">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($F{details})]]></dataSourceExpression>
+					</datasetRun>
+					<column kind="single" uuid="8763f05e-1e92-48db-87f8-40e721878311" width="40">
+						<columnHeader height="30" rowSpan="1" style="Table_CH">
+							<element kind="staticText" uuid="0c951a26-bf8a-4e4c-b736-3465ed5b5ed2" x="0" y="0" width="40" height="30">
+								<text><![CDATA[No]]></text>
+							</element>
+						</columnHeader>
+						<columnFooter height="30" rowSpan="1" style="Table_CH"/>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="6ff43251-9fa4-4cdd-9e58-7f4725d68655" x="0" y="0" width="40" height="30">
+								<expression><![CDATA[$V{REPORT_COUNT}]]></expression>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+					</column>
+					<column kind="single" uuid="7d8de576-5f53-4355-a961-69fbe4f42917" width="150">
+						<columnHeader height="30" rowSpan="1" style="Table_CH">
+							<element kind="staticText" uuid="0ba93779-7f36-40c8-8b2a-e9f9a4110451" x="0" y="0" width="150" height="30">
+								<text><![CDATA[Item Name]]></text>
+							</element>
+						</columnHeader>
+						<columnFooter height="30" rowSpan="1" style="Table_CH"/>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="ea4801f9-72a0-4282-adbf-e0542bd08ea9" x="0" y="0" width="150" height="30" linkType="None" linkTarget="Self">
+								<expression><![CDATA[$F{itemName}]]></expression>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+					</column>
+					<column kind="single" uuid="d3dc0869-5859-451d-91e4-d6d4d3a36682" width="130">
+						<columnHeader height="30" rowSpan="1" style="Table_CH">
+							<element kind="staticText" uuid="6a5ea006-78f3-4e64-9158-a3ffb0323785" x="0" y="0" width="130" height="30">
+								<text><![CDATA[Description]]></text>
+							</element>
+						</columnHeader>
+						<columnFooter height="30" rowSpan="1" style="Table_CH"/>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="e4f3d4e2-118f-488f-9d94-7e440a555464" x="0" y="0" width="130" height="30">
+								<expression><![CDATA[$F{description}]]></expression>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+					</column>
+					<column kind="single" uuid="aedcf319-72a1-474a-9c51-01d06a642b3a" width="80">
+						<columnHeader height="30" rowSpan="1" style="Table_CH">
+							<element kind="staticText" uuid="b041e98a-137d-4474-a4b7-0ed5c2c95387" x="0" y="0" width="80" height="30">
+								<text><![CDATA[Unit Price]]></text>
+							</element>
+						</columnHeader>
+						<columnFooter height="30" rowSpan="1" style="Table_CH"/>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="2cb23f99-27e4-45e9-9817-a0f2ea418717" x="0" y="0" width="80" height="30">
+								<expression><![CDATA[$F{unitPrice}]]></expression>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+					</column>
+					<column kind="single" uuid="da2399c8-4522-42ac-8356-0f72f0074948" width="70">
+						<columnHeader height="30" rowSpan="1" style="Table_CH">
+							<element kind="staticText" uuid="d40a63ab-3a32-4f05-a324-b8bd9b6c4883" x="0" y="0" width="70" height="30">
+								<text><![CDATA[Quantity]]></text>
+							</element>
+						</columnHeader>
+						<columnFooter height="30" rowSpan="1" style="Table_CH">
+							<element kind="textField" uuid="a0c159dc-33ae-4eb0-aed5-a73cc170656c" x="0" y="0" width="70" height="30">
+								<expression><![CDATA[$V{SUM_QUANTITY}]]></expression>
+							</element>
+						</columnFooter>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="67749310-0a0b-457d-a2ef-21291392d60a" x="0" y="0" width="70" height="30">
+								<expression><![CDATA[$F{quantity}]]></expression>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+					</column>
+					<column kind="single" uuid="5453789c-e8ae-4a55-a490-6e834f816122" width="85">
+						<columnHeader height="30" rowSpan="1" style="Table_CH">
+							<element kind="staticText" uuid="bf8854d2-3dbb-4fba-bc4e-6e7f58016c3a" x="0" y="0" width="85" height="30">
+								<text><![CDATA[Amount]]></text>
+							</element>
+						</columnHeader>
+						<columnFooter height="30" rowSpan="1" style="Table_CH">
+							<element kind="textField" uuid="063c54af-73bc-40bc-8001-9103545c1a83" x="0" y="0" width="85" height="30">
+								<expression><![CDATA[$V{SUM_AMOUNT}]]></expression>
+							</element>
+						</columnFooter>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="c7b673a6-fde8-4315-9118-0e2cecf031b7" x="0" y="0" width="85" height="30">
+								<expression><![CDATA[$F{unitPrice} * $F{amount}]]></expression>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
+					</column>
+				</component>
+				<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+				<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+				<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+				<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+			</element>
+		</band>
+	</detail>
+	<summary height="100" splitType="Stretch">
+		<element kind="staticText" uuid="a8e8f602-c34f-47a5-9a7c-e8d416107a8e" x="0" y="50" width="50" height="15" fontSize="9.0" bold="true">
+			<text><![CDATA[Notes:]]></text>
+		</element>
+		<element kind="textField" uuid="00cfed8b-440d-4d93-8bd1-3e9f50d9d874" x="0" y="65" width="350" height="30" fontSize="8.0">
+			<expression><![CDATA[$P{notes}]]></expression>
+		</element>
+	</summary>
+</jasperReport>

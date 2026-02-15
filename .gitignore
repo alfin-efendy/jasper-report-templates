@@ -1,0 +1,22 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Windows zone identifier artifacts
+*:Zone.Identifier
+
+# Build outputs
+dist/
+target/
+
+# Maven local wrapper logs
+.mvn/wrapper/maven-wrapper.jar
+
+# Jasper generated artifacts
+**/*.jasper
+*_Dataset*_*.java
+
+# Logs
+*.log
